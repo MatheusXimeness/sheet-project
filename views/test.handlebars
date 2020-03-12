@@ -1,0 +1,80 @@
+<div class="p-3" style="background-color: #eee;"> 
+    <h2>Test</h2>
+
+    <div id="example" style="overflow: hidden;"></div>
+
+    <form action="/" enctype="multipart/form-data" method="post">
+      <input type="file" name="file-to-upload">
+      <input type="submit" value="Upload">
+    </form>  
+
+
+    <form enctype="multipart/form-data" class="m-2">
+        <input id="upload" type=file  name="files[]">
+    </form>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script>
+    var ExcelToJSON = function() {
+        this.parseExcel = function(file) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var data = e.target.result;
+                var workbook = XLSX.read(data, {
+                    type: 'binary'
+                });
+
+                var sheet = workbook.SheetNames[0]
+                let sheetData = XLSX.utils.sheet_to_json(workbook.Sheets["COTAXE"], {
+                    header: 1,
+                    defval: '',
+                    blankrows: true
+                })
+
+                data = sheetData
+                const container = document.getElementById('example');
+                console.log(sheetData)
+                const hot = new Handsontable(container, {
+                    data: data,
+                    rowHeaders: true,
+                    colHeaders: true,
+                    width: '100%',
+                    height: 320,
+                    manualColumnResize: true,
+                    manualRowResize: true,
+                    headerTooltips: true,
+                    filters: true,
+                    dropdownMenu: true
+                });
+            }
+
+            reader.onerror = function(ex) {
+                console.log(ex);
+            }
+
+            reader.readAsBinaryString(file);
+        }
+    }
+
+    function handleFileSelect(evt) {
+        
+        var files = evt.target.files; // FileList object
+        var xl2json = new ExcelToJSON();
+        xl2json.parseExcel(files[0]);
+    }
+    document.getElementById('upload').addEventListener('change', handleFileSelect, false);
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+
+<script>
+    
+
+</script>
